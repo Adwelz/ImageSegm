@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -76,14 +77,18 @@ public class ImageUtility {
 
         short[][] graph = new short[n][n];
 
+        for(short[] row:graph){
+            Arrays.fill(row,(short) -1);
+        }
+        
         for (int i = 0; i < n; i++) {
-            if (i - 1 >= 0) {
+            if (i - 1 >= 0 && i % width != 0) {
                 short weight = (short) dist(i, i - 1);
 
                 graph[i][i - 1] = weight;
                 graph[i - 1][i] = weight;
             }
-            if (i + 1 < n) {
+            if (i + 1 < n && i % width != width - 1) {
                 short weight = (short) dist(i, i + 1);
 
                 graph[i][i + 1] = weight;
@@ -125,13 +130,13 @@ public class ImageUtility {
 
             List<Integer> vList = new ArrayList<>();
 
-            if (u > 0) {
+            if (u % width != 0 && u>0) {
                 vList.add(u - 1);
             }
             if (u >= this.width) {
                 vList.add(u - this.width);
             }
-            if (u < n - 1) {
+            if (i % width != width - 1 && u<n-1) {
                 vList.add(u + 1);
             }
             if (u < n - this.width) {
@@ -139,7 +144,7 @@ public class ImageUtility {
             }
 
             for (int v : vList) {
-                if (graph[u][v] != 0 && !mstSet[v] && graph[u][v] < key[v]) {
+                if (graph[u][v] != -1 && !mstSet[v] && graph[u][v] < key[v]) {
                     parent[v] = u;
                     key[v] = graph[u][v];
                 }
@@ -190,4 +195,9 @@ public class ImageUtility {
         return width;
     }
 
+    public int getHeight() {
+        return height;
+    }
+
+    
 }
