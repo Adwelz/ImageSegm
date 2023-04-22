@@ -17,12 +17,13 @@ public class ImageUtility {
     BufferedImage img;
     int width;
     int height;
+    List<List<Integer>> adjList;
 
     private static ImageUtility single_instance = null;
 
     public ImageUtility() {
         try {
-            config.load(new FileInputStream("src/resources/config.properties"));
+            config.load(new FileInputStream("/Users/antoine/ImageSegm/ImageSegm/src/resources/config.properties"));
 
             imgPath = config.getProperty("imgPath");
 
@@ -30,6 +31,8 @@ public class ImageUtility {
 
             width = img.getWidth();
             height = img.getHeight();
+
+            this.adjList = genAdjList();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -43,6 +46,10 @@ public class ImageUtility {
             single_instance = new ImageUtility();
             
         return single_instance;
+    }
+
+    public List<List<Integer>> getAdjList() {
+        return adjList;
     }
 
     public int[] getRGB(int x, int y) {
@@ -72,6 +79,53 @@ public class ImageUtility {
         return Math.sqrt(Math.pow(dR, 2) + Math.pow(dG, 2) + Math.pow(dB, 2));
     }
 
+    public List<List<Integer>> genAdjList(){
+        int n = this.width * this.height;
+
+        List<List<Integer>> adjList = new ArrayList<>(n);
+        
+        for (int i = 0; i < n; i++) {
+            adjList.add(new ArrayList<Integer>());
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && i % width != 0) {
+                if(!adjList.get(i).contains(i-1)){
+                    adjList.get(i).add(i-1);
+                }
+                if(!adjList.get(i-1).contains(i)){
+                    adjList.get(i-1).add(i);
+                }
+            }
+            if (i + 1 < n && i % width != width - 1) {
+                if(!adjList.get(i).contains(i+1)){
+                    adjList.get(i).add(i+1);
+                }
+                if(!adjList.get(i+1).contains(i)){
+                    adjList.get(i+1).add(i);
+                }
+            }
+            if (i - this.width >= 0) {
+                if(!adjList.get(i- this.width).contains(i)){
+                    adjList.get(i- this.width).add(i);
+                }
+                if(!adjList.get(i).contains(i- this.width)){
+                    adjList.get(i).add(i- this.width);
+                }
+            }
+            if (i + this.width < n) {
+                if(!adjList.get(i+ this.width).contains(i)){
+                    adjList.get(i + this.width).add(i);
+                }
+                if(!adjList.get(i).contains(i+ this.width)){
+                    adjList.get(i).add(i + this.width);
+                }
+            }
+        }
+
+        return adjList;
+    }
+
     public short[][] genAdjMatrix() {
         int n = this.width * this.height;
 
@@ -80,28 +134,28 @@ public class ImageUtility {
         for(short[] row:graph){
             Arrays.fill(row,(short) -1);
         }
-        
+
         for (int i = 0; i < n; i++) {
-            if (i - 1 >= 0 && i % width != 0) {
-                short weight = (short) dist(i, i - 1);
+            if (i > 0 && i % width != 0) {
+                short weight = (short) dist(i,i-1);
 
                 graph[i][i - 1] = weight;
                 graph[i - 1][i] = weight;
             }
             if (i + 1 < n && i % width != width - 1) {
-                short weight = (short) dist(i, i + 1);
+                short weight = (short) dist(i,i+1);
 
                 graph[i][i + 1] = weight;
                 graph[i + 1][i] = weight;
             }
             if (i - this.width >= 0) {
-                short weight = (short) dist(i, i - this.width);
+                short weight = (short) dist(i,i-this.width);
 
                 graph[i][i - this.width] = weight;
                 graph[i - this.width][i] = weight;
             }
             if (i + this.width < n) {
-                short weight = (short) dist(i, i + this.width);
+                short weight = (short) dist(i,i+this.width);
 
                 graph[i][i + this.width] = weight;
                 graph[i + this.width][i] = weight;
@@ -111,7 +165,62 @@ public class ImageUtility {
         return graph;
     }
 
-    public int[] prim(short[][] graph, int firstVertice) {
+    public int[] prim(List<List<Integer>> adjList, int firstVertice) {
+        int n = adjList.size();
+        int[] parent = new int[n];
+        double[] key = new double[n];
+        boolean[] mstSet = new boolean[n];
+
+        for (int i = 0; i < n; i++) {
+            key[i] = Double.MAX_VALUE;
+        }
+
+        key[firstVertice] = 0;
+        parent[firstVertice] = -1;
+
+        for (int i = 0; i < n - 1; i++) {
+            int u = minKey(key, mstSet);
+            mstSet[u] = true;
+
+            List<Integer> vList = new ArrayList<>();
+
+            if (u % width != 0 && u>0) {
+                vList.add(u - 1);
+            }
+            if (u >= this.width) {
+                vList.add(u - this.width);
+            }
+            if (i % width != width - 1 && u<n-1) {
+                vList.add(u + 1);
+            }
+            if (u < n - this.width) {
+                vList.add(u + this.width);
+            }
+
+            for (int v : vList) {
+                if (adjList.get(u).contains(v) && !mstSet[v] && dist(u,v) < key[v]) {
+                    parent[v] = u;
+                    key[v] = dist(u,v);
+                }
+            }
+        }
+
+        return parent;
+    }
+
+    public static int minKey(double[] key, boolean[] mstSet) {
+        double min = Double.MAX_VALUE;
+        int minIndex = -1;
+        for (int i = 0; i < key.length; i++) {
+            if (!mstSet[i] && key[i] < min) {
+                min = key[i];
+                minIndex = i;
+            }
+        }
+        return minIndex;
+    }
+
+    /* public int[] prim(short[][] graph, int firstVertice) {
         int n = graph.length;
         int[] parent = new int[n];
         short[] key = new short[n];
@@ -164,7 +273,7 @@ public class ImageUtility {
             }
         }
         return minIndex;
-    }
+    } */
 
     public String[] parent2genotype(int[] parent) {
         int n = parent.length;
