@@ -48,6 +48,18 @@ public class ImageUtility {
         return single_instance;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public BufferedImage getImg() {
+        return img;
+    }
+
     public List<List<Integer>> getAdjList() {
         return adjList;
     }
@@ -126,45 +138,6 @@ public class ImageUtility {
         return adjList;
     }
 
-    public short[][] genAdjMatrix() {
-        int n = this.width * this.height;
-
-        short[][] graph = new short[n][n];
-
-        for(short[] row:graph){
-            Arrays.fill(row,(short) -1);
-        }
-
-        for (int i = 0; i < n; i++) {
-            if (i > 0 && i % width != 0) {
-                short weight = (short) dist(i,i-1);
-
-                graph[i][i - 1] = weight;
-                graph[i - 1][i] = weight;
-            }
-            if (i + 1 < n && i % width != width - 1) {
-                short weight = (short) dist(i,i+1);
-
-                graph[i][i + 1] = weight;
-                graph[i + 1][i] = weight;
-            }
-            if (i - this.width >= 0) {
-                short weight = (short) dist(i,i-this.width);
-
-                graph[i][i - this.width] = weight;
-                graph[i - this.width][i] = weight;
-            }
-            if (i + this.width < n) {
-                short weight = (short) dist(i,i+this.width);
-
-                graph[i][i + this.width] = weight;
-                graph[i + this.width][i] = weight;
-            }
-        }
-
-        return graph;
-    }
-
     public int[] prim(List<List<Integer>> adjList, int firstVertice) {
         int n = adjList.size();
         int[] parent = new int[n];
@@ -220,61 +193,6 @@ public class ImageUtility {
         return minIndex;
     }
 
-    /* public int[] prim(short[][] graph, int firstVertice) {
-        int n = graph.length;
-        int[] parent = new int[n];
-        short[] key = new short[n];
-        boolean[] mstSet = new boolean[n];
-
-        for (int i = 0; i < n; i++) {
-            key[i] = Short.MAX_VALUE;
-        }
-
-        key[firstVertice] = 0;
-        parent[firstVertice] = -1;
-
-        for (int i = 0; i < n - 1; i++) {
-            int u = minKey(key, mstSet);
-            mstSet[u] = true;
-
-            List<Integer> vList = new ArrayList<>();
-
-            if (u % width != 0 && u>0) {
-                vList.add(u - 1);
-            }
-            if (u >= this.width) {
-                vList.add(u - this.width);
-            }
-            if (i % width != width - 1 && u<n-1) {
-                vList.add(u + 1);
-            }
-            if (u < n - this.width) {
-                vList.add(u + this.width);
-            }
-
-            for (int v : vList) {
-                if (graph[u][v] != -1 && !mstSet[v] && graph[u][v] < key[v]) {
-                    parent[v] = u;
-                    key[v] = graph[u][v];
-                }
-            }
-        }
-
-        return parent;
-    }
-
-    public static int minKey(short[] key, boolean[] mstSet) {
-        short min = Short.MAX_VALUE;
-        int minIndex = -1;
-        for (int i = 0; i < key.length; i++) {
-            if (!mstSet[i] && key[i] < min) {
-                min = key[i];
-                minIndex = i;
-            }
-        }
-        return minIndex;
-    } */
-
     public String[] parent2genotype(int[] parent) {
         int n = parent.length;
         String[] genotype = new String[n];
@@ -298,15 +216,5 @@ public class ImageUtility {
             }
         }
         return genotype;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    
+    }    
 }

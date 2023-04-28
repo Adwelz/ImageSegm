@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.List;
 
 public class App {
@@ -6,11 +5,15 @@ public class App {
 
         long startTime = System.nanoTime();
 
-        //Ga ga = new Ga(4, 0.5f, 0.2f);
+        /* Individual individual = new Individual(2, 100);
 
-        //Individual individual = ga.run(200);
+        individual.createImgs("testGaI"); */
 
-        //individual.createImg();
+        /* Ga ga = new Ga(4, 0.5f, 0.2f);
+
+        Individual individual = ga.run(20);
+
+        individual.createImg(); */
 
         MOGa moGa =new MOGa(4, 0.2f);
 
@@ -23,35 +26,8 @@ public class App {
             }
         }
         for(int i =0;i<fronts.get(0).size();i++){
-            fronts.get(0).get(i).createImg(Integer.toString(i)+".png");
-        }
-
-
-        /* Individual parent1 = new Individual(5);
-        Individual parent2 = new Individual(6);
-
-        Individual[] childs = parent1.crossover(parent2);
-
-        childs[0] = childs[0].removeSmallSegments();
-
-        childs[0].createImg("child.png"); */
-
-        //i.get(0).get(0).createImg();
-
-        /* int j =0;
-        boolean b = true;
-        while(b){
-            for(Individual individual : i.get(j)){
-                int k =0;
-                if(individual.getOutOfSegmentRange() == 0){
-                    i.get(0).get(0).createImg(k);
-                    k++;
-                    b =false;
-                }
-            }
-            j++;
-        }  */
-        
+            fronts.get(0).get(i).createImgs(Integer.toString(i)+"MOGA147091.png");
+        }        
 
         long endTime   = System.nanoTime();
 

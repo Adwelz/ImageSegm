@@ -8,7 +8,7 @@ public class IndividualTest {
     @Test
     public void testIndividual() {
         long startTime = System.nanoTime();
-        Individual individual = new Individual(1);
+        Individual individual = new Individual(1, 100);
         long endTime   = System.nanoTime();
 
         long totalTime = endTime - startTime;
@@ -26,7 +26,7 @@ public class IndividualTest {
 
     @Test
     public void testGeno2Individual() {
-        Individual individual = new Individual(10);
+        Individual individual = new Individual(10, 100);
         long startTime = System.nanoTime();
         //Individual individual2 = new Individual(individual.getGenotype());
         long endTime   = System.nanoTime();
@@ -42,8 +42,8 @@ public class IndividualTest {
 
     @Test
     public void testCrossover() {
-        Individual individual1 = new Individual(1);
-        Individual individual2 = new Individual(2);
+        Individual individual1 = new Individual(1, 100);
+        Individual individual2 = new Individual(2, 100);
         String[] geno = individual1.getGenotype();
         Individual[] childs = individual1.crossover(individual2);
         
@@ -53,23 +53,16 @@ public class IndividualTest {
 
     @Test
     public void testDominate() {
-        Individual individual = new Individual(1);
+        Individual individual = new Individual(1, 100);
         System.out.println(individual.dominate(individual));
     }
 
     @Test
     public void testMutation() {
-        Individual individual = new Individual(1);
+        Individual individual = new Individual(1, 100);
         String[] geno = individual.getGenotype();
         Individual individual2 = individual.mutation();
         System.out.println(geno ==individual.getGenotype());
         System.out.println(geno ==individual2.getGenotype());
     }
-
-    @Test
-    public void testHueristicSegmentsSizeDiminution() {
-        Individual individual = new Individual(2);
-        Individual other = individual.hueristicSegmentsSizeDiminution(10);
-    }
-
 }

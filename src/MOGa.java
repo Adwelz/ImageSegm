@@ -2,8 +2,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -35,7 +33,7 @@ public class MOGa {
     void init_population(){
         this.population = new ArrayList<>();
         for(int i=1;i<nbrIndividuals+1;i++){
-            population.add(new Individual(i));
+            population.add(new Individual(i, this.segmentsMinSize));
         }
     }
 
@@ -172,19 +170,6 @@ public class MOGa {
         return indexes;
     }
 
-    /* public static List<Integer> indexTriOutOfSegmentRange(List<Individual> list) {
-        List<Integer> indexes = new ArrayList<>();
-        List<Individual> sortedListe = new ArrayList<>(list);
-
-        sortedListe.sort(Comparator.comparing(Individual::getOutOfSegmentRange));
-        Collections.reverse(sortedListe);
-
-        for (Individual element : sortedListe) {
-            indexes.add(list.indexOf(element));
-        }
-        return indexes;
-    } */
-
     public double[] crowdingDistanceEdgeValue(List<Individual> list){
         double[] crowdingDistance = new double[list.size()];
 
@@ -254,45 +239,16 @@ public class MOGa {
         return crowdingDistance;
     }
 
-    /* public double[] crowdingDistanceOutOfSegmentRange(List<Individual> list){
-        double[] crowdingDistance = new double[list.size()];
-
-        List<Integer> indexTriOutOfSegmentRange = indexTriOutOfSegmentRange(list);
-
-        int indexFirst = indexTriOutOfSegmentRange.get(0);
-        int indexLast = indexTriOutOfSegmentRange.get(indexTriOutOfSegmentRange.size()-1);
-
-
-        crowdingDistance[indexFirst] = Double.POSITIVE_INFINITY;
-        crowdingDistance[indexLast] = Double.POSITIVE_INFINITY;
-
-        for(int j =1;j<list.size()-1;j++){
-            int index = indexTriOutOfSegmentRange.get(j);
-            int nextIndex = indexTriOutOfSegmentRange.get(j+1);
-            int previousIndex = indexTriOutOfSegmentRange.get(j-1);
-            if(list.get(indexLast).getOutOfSegmentRange() - list.get(indexFirst).getOutOfSegmentRange() == 0){
-                crowdingDistance[index] = 1;
-            }
-            else{
-                crowdingDistance[index] = (double) (list.get(nextIndex).getOutOfSegmentRange() - list.get(previousIndex).getOutOfSegmentRange())
-                /(list.get(indexLast).getOutOfSegmentRange() - list.get(indexFirst).getOutOfSegmentRange());
-            }
-        }
-
-        return crowdingDistance;
-    } */
-
     public double[] crowdingDistance(List<Individual> front){
         double[] crowdingDistance = new double[front.size()];
 
         double[] crowdingDistanceEdgeValue = crowdingDistanceEdgeValue(front);
         double[] crowdingDistanceConnectivity = crowdingDistanceConnectivity(front);
         double[] crowdingDistanceOverallDeviation = crowdingDistanceOverallDeviation(front);
-        // double[] crowdingDistanceNbrOfSegments = crowdingDistanceOutOfSegmentRange(front);
 
         for(int i =0;i<front.size();i++){
             crowdingDistance[i] = crowdingDistanceEdgeValue[i] + crowdingDistanceConnectivity[i] 
-                                + crowdingDistanceOverallDeviation[i]; // + crowdingDistanceNbrOfSegments[i];
+                                + crowdingDistanceOverallDeviation[i];
         }
 
         return crowdingDistance;
@@ -316,122 +272,8 @@ public class MOGa {
 
                 Individual[] childs = crossover(parent1,parent2);
 
-                /* List<Individual> list = new ArrayList<>();
-
-                list.add(childs[0]);
-                list.add(childs[1]);
-                list.add(parent1);
-                list.add(parent2);
-
-                double[] crowdingDistance = crowdingDistance(list);
-
-                Individual child1;
-                Individual child2;
-
-                if(crowdingDistance[0]+crowdingDistance[2] + crowdingDistance[1]+crowdingDistance[3] < crowdingDistance[0]+crowdingDistance[3] + crowdingDistance[1]+crowdingDistance[2]){
-                    child1 = childs[0];
-                    child2 = childs[1];
-                }
-                else{
-                    child1 = childs[1];
-                    child2 = childs[0];
-                }
-
-                List<Individual> populationCopy1 = new ArrayList<>(population);
-
-                populationCopy1.add(child1);
-
-                List<List<Individual>> fronts1 = fronts(populationCopy1);
-
-                int child1Front = -1;
-                int parent1Front = -1;
-
-                for(int r=0;r<fronts1.size();r++){
-                    if(fronts1.get(r).contains(child1)){
-                        child1Front = r;
-                    }
-                    if(fronts1.get(r).contains(parent1)){
-                        parent1Front = r;
-                    }
-                }
-
-                Individual individual1;
-
-                if(child1Front<parent1Front){
-                    individual1 = child1;
-                }
-                else if(child1Front>parent1Front){
-                    individual1 = parent1;
-                }
-                else{
-                    List<Individual> front = fronts1.get(child1Front);
-                    int indexOfchild1 = front.indexOf(child1);
-                    int indexOfparent1 = front.indexOf(P.get(i));
-
-                    double[] crowdingDistance1 = crowdingDistance(front);
-
-                    if(crowdingDistance1[indexOfchild1]>crowdingDistance1[indexOfparent1]){
-                        individual1 = child1;
-                    }
-                    else{
-                        individual1 = parent1;
-                    }
-                }
-                
-                List<Individual> populationCopy2 = new ArrayList<>(population);
-
-                populationCopy2.add(child2);
-
-                List<List<Individual>> fronts2 = fronts(populationCopy2);
-
-                int child2Front = -1;
-                int parent2Front = -1;
-
-                for(int r=0;r<fronts2.size();r++){
-                    if(fronts2.get(r).contains(child2)){
-                        child2Front = r;
-                    }
-                    if(fronts2.get(r).contains(parent2)){
-                        parent2Front = r;
-                    }
-                }
-
-                Individual individual2;
-
-                if(child2Front<parent2Front){
-                    individual2 = child2;
-                }
-                else if(child2Front>parent2Front){
-                    individual2 = parent2;
-                }
-                else{
-                    List<Individual> front = fronts2.get(child2Front);
-                    int indexOfchild1 = front.indexOf(child2);
-                    int indexOfparent1 = front.indexOf(parent2);
-
-                    double[] crowdingDistance2 = crowdingDistance(front);
-
-                    if(crowdingDistance2[indexOfchild1]>crowdingDistance2[indexOfparent1]){
-                        individual2 = child2;
-                    }
-                    else{
-                        individual2 = parent2;
-                    }
-                }
-
-                if (Math.random() < mutation_rate) {
-                    individual1 = individual1.mutation();
-                }
-
-                if (Math.random() < mutation_rate) {
-                    individual2 = individual2.mutation();
-                }
-
-                Q.add(individual1);
-                Q.add(individual2); */
-
-                Individual individual1 = childs[0];//.hueristicSegmentsSizeDiminution(20);
-                Individual individual2 = childs[1];//.hueristicSegmentsSizeDiminution(20);
+                Individual individual1 = childs[0];
+                Individual individual2 = childs[1];
 
                 if (Math.random() < mutation_rate) {
                     individual1 = individual1.mutation();

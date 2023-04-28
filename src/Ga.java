@@ -1,14 +1,20 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 
 public class Ga {
 
+    Properties config = new Properties();
     private final int nbrIndividuals;
     private final float crossover_rate;
     private final float mutation_rate;
+    private int segmentsMinSize =100;
 
     List<Individual> population = new ArrayList<>();
 
@@ -16,12 +22,22 @@ public class Ga {
         this.nbrIndividuals = nbrIndividuals;
         this.crossover_rate = crossoverRate;
         this.mutation_rate = mutationRate;
+
+        try {
+            config.load(new FileInputStream("/Users/antoine/ImageSegm/ImageSegm/src/resources/config.properties"));
+
+            this.segmentsMinSize = Integer.parseInt(config.getProperty("SegmentMinSize"));            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     void init_population(){
         this.population = new ArrayList<>();
         for(int i=1;i<nbrIndividuals+1;i++){
-            population.add(new Individual(i));
+            population.add(new Individual(i, this.segmentsMinSize));
         }
     }
 
@@ -88,16 +104,8 @@ public class Ga {
                     individual2 = parents.get(i+1);
                 }
 
-                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
-                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
-                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
-                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
-                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
-                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
-                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
-                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
-                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
-                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
+                individual1 = individual1.removeSmallSegments(segmentsMinSize);
+                individual2 = individual2.removeSmallSegments(segmentsMinSize);
 
                 if (Math.random() < mutation_rate) {
                     individual1 = individual1.mutation();
