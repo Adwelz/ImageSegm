@@ -52,7 +52,7 @@ public class Ga {
         return i1.crossover(i2);
     }
 
-    void run(int nbrOfCycle){
+    Individual run(int nbrOfCycle){
         init_population();
         int nbrParents = (int) (nbrIndividuals*crossover_rate);
 
@@ -88,6 +88,17 @@ public class Ga {
                     individual2 = parents.get(i+1);
                 }
 
+                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
+                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
+                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
+                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
+                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
+                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
+                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
+                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
+                individual1 = individual1.hueristicSegmentsSizeDiminution(10);
+                individual2 = individual2.hueristicSegmentsSizeDiminution(10);
+
                 if (Math.random() < mutation_rate) {
                     individual1 = individual1.mutation();
                 }
@@ -106,9 +117,11 @@ public class Ga {
             System.out.println(best.getEdgeValue());
             System.out.println(best.getConnectivity());
             System.out.println(best.getOverallDeviation());
-
+            System.out.println(best.getSegments().size());
             //System.out.println(Arrays.asList(best.getGenotype()));
         }
+        Individual best = population.get(0);
+        return best;
     }
 
 }

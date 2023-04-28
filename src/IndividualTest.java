@@ -28,26 +28,33 @@ public class IndividualTest {
     public void testGeno2Individual() {
         Individual individual = new Individual(10);
         long startTime = System.nanoTime();
-        Individual individual2 = new Individual(individual.getGenotype());
+        //Individual individual2 = new Individual(individual.getGenotype());
         long endTime   = System.nanoTime();
 
         long totalTime = endTime - startTime;
         System.out.println(String.format("Test time : %s", totalTime/Math.pow(10,9)));
         for(int i =0;i<241;i++){
             //if(i%241 ==240){
-                System.out.println(individual2.getGenotype()[i]=="up");
+                //System.out.println(individual2.getGenotype()[i]=="up");
             //}
         }
     }
 
     @Test
     public void testCrossover() {
+        Individual individual1 = new Individual(1);
+        Individual individual2 = new Individual(2);
+        String[] geno = individual1.getGenotype();
+        Individual[] childs = individual1.crossover(individual2);
         
+        System.out.println(childs[0].getGenotype() ==geno);
+        System.out.println(childs[0].getSegments().size());
     }
 
     @Test
     public void testDominate() {
-        
+        Individual individual = new Individual(1);
+        System.out.println(individual.dominate(individual));
     }
 
     @Test
@@ -58,4 +65,11 @@ public class IndividualTest {
         System.out.println(geno ==individual.getGenotype());
         System.out.println(geno ==individual2.getGenotype());
     }
+
+    @Test
+    public void testHueristicSegmentsSizeDiminution() {
+        Individual individual = new Individual(2);
+        Individual other = individual.hueristicSegmentsSizeDiminution(10);
+    }
+
 }

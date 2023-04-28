@@ -6,59 +6,53 @@ public class App {
 
         long startTime = System.nanoTime();
 
-        Individual individual = new Individual(2);
-        //Individual individual = new Individual(2);
+        //Ga ga = new Ga(4, 0.5f, 0.2f);
 
-        //System.out.println(individual2.getAdjacentPixels());
-        /* System.out.println(individual.getEdgeValue());
-        System.out.println(individual.getConnectivity());
-        System.out.println(individual.getOverallDeviation()); */
-        //System.out.println(Arrays.toString(individual.getGenotype()));
-        //System.out.println();
-        //String[] geno = individual.getGenotype();
+        //Individual individual = ga.run(200);
 
-        /* for(int i=0;i<10100;i++){
-            if(i % ImageUtility.getInstance().getWidth() == ImageUtility.getInstance().getWidth()-1){
-                System.out.println(geno[i]);
+        //individual.createImg();
+
+        MOGa moGa =new MOGa(4, 0.2f);
+
+        List<List<Individual>> fronts = moGa.run(30);
+
+        for(List<Individual> front : fronts){
+            System.out.println(front.size()+"\n");
+            for(Individual i : front){
+                System.out.println(i.getSegments().size());
             }
+        }
+        for(int i =0;i<fronts.get(0).size();i++){
+            fronts.get(0).get(i).createImg(Integer.toString(i)+".png");
+        }
+
+
+        /* Individual parent1 = new Individual(5);
+        Individual parent2 = new Individual(6);
+
+        Individual[] childs = parent1.crossover(parent2);
+
+        childs[0] = childs[0].removeSmallSegments();
+
+        childs[0].createImg("child.png"); */
+
+        //i.get(0).get(0).createImg();
+
+        /* int j =0;
+        boolean b = true;
+        while(b){
+            for(Individual individual : i.get(j)){
+                int k =0;
+                if(individual.getOutOfSegmentRange() == 0){
+                    i.get(0).get(0).createImg(k);
+                    k++;
+                    b =false;
+                }
+            }
+            j++;
         }  */
+        
 
-        /* Individual individual2 = new Individual(2);
-        System.out.println(individual2.getConnectivity());
-        System.out.println(individual2.getEdgeValue());
-        System.out.println(individual2.getOverallDeviation());
-
-        Individual[] childs = individual.crossover(individual2);
-        System.out.println(childs[0].getConnectivity());
-        System.out.println(childs[0].getEdgeValue());
-        System.out.println(childs[0].getOverallDeviation());
- */
-
-        /* System.out.println(geno[0]+" "+ geno[1]+" "+geno[2]);
-        System.out.println(geno[0+ImageUtility.getInstance().width]+" "+ geno[1+ImageUtility.getInstance().width]+" "+geno[2+ImageUtility.getInstance().width]);
-        System.out.println(geno[0+ImageUtility.getInstance().width*2]+" "+ geno[1+ImageUtility.getInstance().width*2]+" "+geno[2+ImageUtility.getInstance().width*2]);
-        System.out.println(geno[0+ImageUtility.getInstance().width*3]+" "+ geno[1+ImageUtility.getInstance().width*3]+" "+geno[2+ImageUtility.getInstance().width*3]);
-        System.out.println(geno[0+ImageUtility.getInstance().width*4]+" "+ geno[1+ImageUtility.getInstance().width*4]+" "+geno[2+ImageUtility.getInstance().width*4]);
-        System.out.println(geno[0+ImageUtility.getInstance().width*5]+" "+ geno[1+ImageUtility.getInstance().width*5]+" "+geno[2+ImageUtility.getInstance().width*5]);
-  */
-        //System.out.println(individual.getOverallDeviation());
-        //System.out.println(individual.getSegments()[0].length);
-        //System.out.println(Arrays.toString(individual.genotype2parent()));
-        /* int[] parent =individual.genotype2parent();
-        for(int i =0;i<parent.length;i++){
-            if(parent[i]==-1){
-                System.out.println("OUI");
-            }
-        } */
-        //System.out.println(Arrays.toString(individual.getGenotype()));
-        //System.out.println(Arrays.asList(geno));
-
-        Ga ga = new Ga(6, 0.5f, 0.2f);
-
-        ga.run(2000);  
-
-        /* List<List<Integer>> adjList = ImageUtility.getInstance().genAdjList();
-        System.out.println(adjList); */
         long endTime   = System.nanoTime();
 
         long totalTime = endTime - startTime;
